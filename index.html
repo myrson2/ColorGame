@@ -38,12 +38,36 @@
           </div>
 
           <div class="bet-grid">
-            <button class="bet-tile red" data-betRed="0" data-color="red"></button>
-            <button class="bet-tile green" data-betGreen="0" data-color="green"></button>
-            <button class="bet-tile purple" data-betPurple="0" data-color="purple"></button>
-            <button class="bet-tile yellow" data-betYellow="0" data-color="yellow"></button>
-            <button class="bet-tile blue" data-betBlue="0" data-color="blue"></button>
-            <button class="bet-tile pink" data-betPink="0" data-color="pink"></button>
+            <button
+              class="bet-tile red"
+              data-betRed="0"
+              data-color="red"
+            ></button>
+            <button
+              class="bet-tile green"
+              data-betGreen="0"
+              data-color="green"
+            ></button>
+            <button
+              class="bet-tile purple"
+              data-betPurple="0"
+              data-color="purple"
+            ></button>
+            <button
+              class="bet-tile yellow"
+              data-betYellow="0"
+              data-color="yellow"
+            ></button>
+            <button
+              class="bet-tile blue"
+              data-betBlue="0"
+              data-color="blue"
+            ></button>
+            <button
+              class="bet-tile pink"
+              data-betPink="0"
+              data-color="pink"
+            ></button>
           </div>
         </div>
 
@@ -53,8 +77,18 @@
             <span class="balance-value">00</span>
           </div>
           <div class="info-group play-button">
-            <button>Roll It!</button>
+            <button type="button" class="roll-btn">
+              <span class="roll-btn__idle">Roll It!</span>
+            </button>
           </div>
+
+          <div class="info-group rolling-btn">
+            <button class="roll-btn__loading">
+              <span class="loader" aria-hidden="true"></span>
+              Rolling...
+            </button>
+          </div>
+
           <div class="info-group align-right">
             <span class="label">Total Bet</span>
             <span class="bet-value">00</span>
@@ -65,13 +99,13 @@
 
     <section class="menu-card">
       <div class="menu">
-        <div class="menu-container"> 
+        <div class="menu-container">
           <div class="input-balance">
             <h1>Set Bet</h1>
-            <input type="number" placeholder="Balance"> 
+            <input type="number" placeholder="Balance" />
           </div>
           <div class="input-bet">
-            <div class="bet-tiles-header"> 
+            <div class="bet-tiles-header">
               <span>Bet Tiles</span>
               <hr />
             </div>
@@ -83,11 +117,40 @@
             </div>
           </div>
           <div class="input-play">
-            <button>Save & Play</button>
+            <button class="save-btn">Save & Play</button>
           </div>
         </div>
       </div>
     </section>
+
+    <section id="resultModal" class="modal-overlay">
+      <div class="result-card">
+          <h1 class="result-title">Result: <span id="resultColors"></span></h1>
+  
+          <div class="summary-container">
+              <div class="bet-details">
+                  <h3>Your Bet</h3>
+                  <div class="table-header">
+                      <span>Color</span>
+                      <span>Bet</span>
+                      <span>Win/Lose</span>
+                  </div>
+                  <div id="betTableBody">
+                      </div>
+              </div>
+  
+              <div class="total-box">
+                  <h3>Total</h3>
+                  <div id="finalPayout" class="grand-amount">₱0</div>
+              </div>
+          </div>
+  
+          <div class="modal-actions">
+              <button onclick="closeModal()" class="btn-again">Bet Again</button>
+              <button onclick="cashout()" class="btn-cashout">Cashout</button>
+          </div>
+      </div>
+  </section>
     <script src="script.js"></script>
   </body>
 </html>

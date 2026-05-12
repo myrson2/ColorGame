@@ -3,6 +3,7 @@ let balance = null;
 let bet = 0;
 
 let getColorsInRoulette = null;
+let rouletteIntervalId = null;
 
 const betTiles = {
     red: 0, 
@@ -128,30 +129,27 @@ bet_grid.addEventListener("click", (e) => {
 });
 
 play_button.addEventListener("click", () => {
+    if (getTotalBet() === 0) return alert("Place your bet first");
+
     setTimeout(() => {
         clearInterval(rouletteIntervalId)
         const reels = [reel1Element.style.backgroundColor, reel2Element.style.backgroundColor, reel3Element.style.backgroundColor];
         getColorsInRoulette = reels.map(color => colorMap[color]);
-        colorOccurrences(getColor(), reels);
+        colorOccurrences(getColorsInRoulette)
+        document.querySelector('.play-button').style.display = 'block';
+        document.querySelector('.rolling-btn').style.display = 'none';
     }, 3000)
-    // Run some ui that shows that the rolling is happening
+
+    rouletteIntervalId = colorRoulette();
+    document.querySelector('.play-button').style.display = 'none';
+    document.querySelector('.rolling-btn').style.display = 'block';
+    
 })
 
-function colorOccurrences(userColors, reels) {
-    userColors.forEach(colors => {
-        const isFind = reels.find(color => color === colors);
-        if (isFind) {
-            const count = reels.filter(color => color === colors).length;
-            console.log(`${colors} : ${count}`);
-        }
+function colorOccurrences(colorsInRoulette) {
+    const colors = getColor();
+    colors.forEach((color) => {
+        const count = colorsInRoulette.filter((reelColor) => reelColor === color).length;
+        console.log(`${color} appears ${count} time(s)`);
     });
 }
-
-/*
-Roll Feature and Result Display
-- User Clicks Roll It
-- The Roulette will take 3 secs to 
-*/
-
-
-let rouletteIntervalId = colorRoulette();  // call to always run this
