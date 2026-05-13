@@ -6,12 +6,12 @@ let getColorsInRoulette = null;
 let rouletteIntervalId = null;
 
 const betTiles = {
-    red: 0, 
-    yellow: 0,
-    green: 0,
-    blue: 0,
-    purple: 0,
-    pink: 0,
+    red: null, 
+    yellow: null,
+    green: null,
+    blue: null,
+    purple: null,
+    pink: null,
 };
 
 function getTotalBet() {
@@ -19,7 +19,7 @@ function getTotalBet() {
 }
 
 const getColor = () => {
-    return Object.keys(betTiles).filter(value => betTiles[value] > 0);
+    return Object.keys(betTiles).filter(value => betTiles[value] != null && betTiles[value] > 0);
 }
 
 const colorMap = {
@@ -138,6 +138,9 @@ play_button.addEventListener("click", () => {
         colorOccurrences(getColorsInRoulette)
         document.querySelector('.play-button').style.display = 'block';
         document.querySelector('.rolling-btn').style.display = 'none';
+        setTimeout(() => {
+           displayResult();
+        }, 2000)
     }, 3000)
 
     rouletteIntervalId = colorRoulette();
@@ -148,8 +151,17 @@ play_button.addEventListener("click", () => {
 
 function colorOccurrences(colorsInRoulette) {
     const colors = getColor();
+    console.log(colors);
     colors.forEach((color) => {
         const count = colorsInRoulette.filter((reelColor) => reelColor === color).length;
         console.log(`${color} appears ${count} time(s)`);
     });
+}
+
+function displayResult() {
+    document.getElementById('resultModal').setAttribute('class', 'modal-overlay');
+}
+
+function closeModal() {
+    document.getElementById('resultModal').setAttribute('class', 'modal-overlay-hidden');
 }

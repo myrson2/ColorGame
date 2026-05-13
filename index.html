@@ -123,7 +123,7 @@
       </div>
     </section>
 
-    <section id="resultModal" class="modal-overlay">
+    <section id="resultModal" class="modal-overlay-hidden">
       <div class="result-card">
           <h1 class="result-title">Result: <span id="resultColors"></span></h1>
   
@@ -135,20 +135,58 @@
                       <span>Bet</span>
                       <span>Win/Lose</span>
                   </div>
-                  <div id="betTableBody">
-                      </div>
+                  <div id="betTableBody" class="bet-table">
+                    <div class="table-row">
+                      <span>Purple</span>
+                      <span>100</span>
+                      <span>-100</span>
+                    </div>
+                    <div class="table-row">
+                      <span>Purple</span>
+                      <span>100</span>
+                      <span>-100</span>
+                    </div>
+                    <div class="table-row">
+                      <span>Purple</span>
+                      <span>100</span>
+                      <span>-100</span>
+                    </div>
+
+                    <div class="table-row">
+                      <span>Purple</span>
+                      <span>100</span>
+                      <span>-100</span>
+                    </div>
+                    <div class="table-row">
+                      <span>Purple</span>
+                      <span>100</span>
+                      <span>-100</span>
+                    </div>
+                  </div>
               </div>
   
               <div class="total-box">
-                  <h3>Total</h3>
-                  <div id="finalPayout" class="grand-amount">₱0</div>
+                 <div class="total">
+                    <h3>Total</h3>
+                    
+                    <div id="finalPayout" class="grand-amount">₱0</div>
+                    
+                    <div class="formula"> Formula: Balance = Current Balance + Total </div>
+                    
+                    <div class="balance">
+                      <div class="balance-label"> Balance: </div> 
+                      <div class="current-balance"> ₱200</div>
+                    </div>
+                  </div>
+
+                  
+                  
+                  <div class="modal-actions">
+                    <button onclick="closeModal()" class="btn-again">Bet Again</button>
+                    <button onclick="cashout()" class="btn-cashout">Cashout</button>
+                </div>
               </div>
-          </div>
-  
-          <div class="modal-actions">
-              <button onclick="closeModal()" class="btn-again">Bet Again</button>
-              <button onclick="cashout()" class="btn-cashout">Cashout</button>
-          </div>
+          </div>        
       </div>
   </section>
     <script src="script.js"></script>
