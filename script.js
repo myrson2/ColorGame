@@ -128,6 +128,9 @@ bet_grid.addEventListener("click", (e) => {
     tile.textContent = tile.dataset.bet;
 });
 
+const betOccurrences = {} // storage of occurrence
+const result = {} // result
+
 play_button.addEventListener("click", () => {
     if (getTotalBet() === 0) return alert("Place your bet first");
 
@@ -139,7 +142,7 @@ play_button.addEventListener("click", () => {
         document.querySelector('.play-button').style.display = 'block';
         document.querySelector('.rolling-btn').style.display = 'none';
         setTimeout(() => {
-           displayResult();
+           displayResult(result);
         }, 2000)
     }, 3000)
 
@@ -149,19 +152,66 @@ play_button.addEventListener("click", () => {
     
 })
 
+
 function colorOccurrences(colorsInRoulette) {
     const colors = getColor();
     console.log(colors);
     colors.forEach((color) => {
         const count = colorsInRoulette.filter((reelColor) => reelColor === color).length;
-        console.log(`${color} appears ${count} time(s)`);
+        betOccurrences[color] = count;
+    });
+    calculateResult(betOccurrences)
+}
+
+function calculateResult(betOccurrences) {
+    Object.entries(betOccurrences).forEach(([color, count]) => {
+        if(count === 0) {
+            result[color] = betTiles[color] * -1;
+        } else {
+            result[color] = betTiles[color] * count;
+        }
     });
 }
 
-function displayResult() {
+// if no occurrences it will subtract to the bet itself
+
+function displayResult(result) {
+    displayInTableBody(result);
+    displayInTotal(result);
     document.getElementById('resultModal').setAttribute('class', 'modal-overlay');
 }
 
+function displayInTableBody(result) {
+    const betTableBody = document.getElementById('betTableBody'); 
+    betTableBody.innerHTML = '';
+    Object.entries(result).forEach(([color, amount]) => {
+        const row = document.createElement('div');
+        row.className = 'table-row';
+        const label = color.charAt(0).toUpperCase() + color.slice(1);
+        const stake = betTiles[color] ?? 0;
+        const winLoseClass = amount >= 0 ? 'win-text' : 'lose-text';
+        row.innerHTML = `
+            <span class="row-color">${label}</span>
+            <span class="row-bet">${stake}</span>
+            <span class="row-winlose ${winLoseClass}">${amount}</span>
+        `;
+        betTableBody.appendChild(row);
+    });
+}
+
+function displayInTotal(result) {
+    let total = 0;
+    Object.values(result).forEach((amount) => {
+        total += amount;
+    })
+    document.getElementById('finalPayout').innerText = total;
+    document.querySelector('.current-balance'). innerText = balance + total;
+}
+
 function closeModal() {
+    document.getElementById('resultModal').setAttribute('class', 'modal-overlay-hidden');
+}
+
+function cashout() {
     document.getElementById('resultModal').setAttribute('class', 'modal-overlay-hidden');
 }
