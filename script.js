@@ -42,10 +42,11 @@ const setBet = document.querySelector(".bet-tiles-grid");
 const input = document.querySelector('input[type="number"]');
 const bet_grid = document.querySelector(".bet-grid");
 const play_button = document.querySelector(".play-button");
+const balance_value = document.querySelector(".balance-value");
+const bet_value = document.querySelector(".bet-value");
+
 
 function clickSaveGame() {
-    const balance_value = document.querySelector(".balance-value");
-    const bet_value = document.querySelector(".bet-value");
     console.log("Game Start!");
     menu_card.classList.toggle("hidden");
 
@@ -126,6 +127,8 @@ bet_grid.addEventListener("click", (e) => {
 
     tile.dataset.bet = betTiles[color];
     tile.textContent = tile.dataset.bet;
+
+    bet_value.innerText = `Php ${getTotalBet()}`;
 });
 
 const betOccurrences = {} // storage of occurrence
@@ -138,6 +141,8 @@ play_button.addEventListener("click", () => {
         clearInterval(rouletteIntervalId)
         const reels = [reel1Element.style.backgroundColor, reel2Element.style.backgroundColor, reel3Element.style.backgroundColor];
         getColorsInRoulette = reels.map(color => colorMap[color]);
+
+        console.log(getColorsInRoulette);
         colorOccurrences(getColorsInRoulette)
         document.querySelector('.play-button').style.display = 'block';
         document.querySelector('.rolling-btn').style.display = 'none';
@@ -152,7 +157,6 @@ play_button.addEventListener("click", () => {
     
 })
 
-
 function colorOccurrences(colorsInRoulette) {
     const colors = getColor();
     console.log(colors);
@@ -160,6 +164,7 @@ function colorOccurrences(colorsInRoulette) {
         const count = colorsInRoulette.filter((reelColor) => reelColor === color).length;
         betOccurrences[color] = count;
     });
+    console.log(betOccurrences);
     calculateResult(betOccurrences)
 }
 
@@ -171,6 +176,7 @@ function calculateResult(betOccurrences) {
             result[color] = betTiles[color] * count;
         }
     });
+    console.log(result);
 }
 
 // if no occurrences it will subtract to the bet itself
@@ -204,14 +210,44 @@ function displayInTotal(result) {
     Object.values(result).forEach((amount) => {
         total += amount;
     })
+    balance += total;
     document.getElementById('finalPayout').innerText = total;
-    document.querySelector('.current-balance'). innerText = balance + total;
+    document.querySelector('.current-balance'). innerText = balance;
+
+    balance_value.innerText = `Php ${balance}`;
+
+    bet_grid.querySelectorAll(".bet-tile").forEach((tile) => {
+        tile.textContent = "";
+    });
 }
 
 function closeModal() {
     document.getElementById('resultModal').setAttribute('class', 'modal-overlay-hidden');
+    document.querySelectorAll('.table-row').forEach((row) => {
+        row.remove();
+    });
+    Object.keys(betTiles).forEach((color) => (betTiles[color] = null));
+    bet_value.innerText = `Php ${getTotalBet()}`;
+    
+    Object.keys(result).forEach((key) => delete result[key]);
+    Object.keys(betOccurrences).forEach((key) => delete betOccurrences[key]);
+
+    if (balance <= 0) {
+        menu_card.classList.remove("hidden");  // show menu again
+        balance = null;                        // optional: force new setup
+        input.value = "";                      // optional: clear input
+        // optional: alert("Out of balance! Set a new balance.");
+    }
 }
 
 function cashout() {
     document.getElementById('resultModal').setAttribute('class', 'modal-overlay-hidden');
+    document.querySelectorAll('.table-row').forEach((row) => {
+        row.remove();
+    });
+    Object.keys(betTiles).forEach((color) => (betTiles[color] = null));
+    bet_value.innerText = `Php ${getTotalBet()}`;
+    
+    Object.keys(result).forEach((key) => delete result[key]);
+    Object.keys(betOccurrences).forEach((key) => delete betOccurrences[key]);
 }
