@@ -2,62 +2,56 @@ import { useEffect, useState } from 'react';
 import './css/App.css';
 import './css/Rules.css'
 
-const userSettings = {
-  'startingBalance': 0,
-  'betIncrements': 0
-}
 
-const validateSettings = () => {
-  // Returns true only if both are positive numbers
-  return userSettings.startingBalance > 0 && userSettings.betIncrements > 0;
-}
-
-
-
+//Components
 const DescriptionComponent = ({ isOpen, onSave }) => {
+  console.log('Description Component is running now.....');
+  // 1. Add temporary local states to hold inputs
+  const [tempBalance, setTempBalance] = useState(0);
+  const [tempIncrement, setTempIncrement] = useState(0);
+
   if (!isOpen) return null;
 
+  // 2. Update functions to set state instead of modifying objects
   function getBalance(event) {
-    console.log(event.target.value);
-    userSettings.startingBalance = Number(event.target.value);
+    console.log('Setting Balance...');
+    setTempBalance(Number(event.target.value));
   }
-
   function getIncrements(event) {
-    console.log(event.target.dataset.value);
-    userSettings.betIncrements = Number(event.target.dataset.value);
+    console.log('Setting Increment...');
+    setTempIncrement(Number(event.target.dataset.value));
   }
-
 
   return (
     <>
-      <section class="menu-card">
-        <div class="menu">
-          <div class="menu-container">
-            <div class="welcome-header">
+      <section className="menu-card">
+        <div className="menu">
+          <div className="menu-container">
+            <div className="welcome-header">
               <h1 className="welcome-title"><span style={{ fontSize: '24px' }}>WELCOME TO</span> <br /> <span style={{ fontSize: '70px' }}>COLORGAME</span></h1>
-              <p class="welcome-subtitle">
+              <p className="welcome-subtitle">
                 A high-fidelity simulation of the classic carnival color-betting game.
                 Set your balance, place your chips, and test your luck!
               </p>
             </div>
-            <div class="input-balance">
+            <div className="input-balance">
               <h2>Set Starting Balance</h2>
               <input type="number" placeholder="Enter starting balance" id="init-balance" onChange={getBalance} />
             </div>
-            <div class="input-bet">
-              <div class="bet-tiles-header">
+            <div className="input-bet">
+              <div className="bet-tiles-header">
                 <span>Bet Increments</span>
                 <hr />
               </div>
-              <div class="bet-tiles-grid">
-                <button class="bet red" data-value="5" onClick={getIncrements}>05</button>
-                <button class="bet pink" data-value="10" onClick={getIncrements}>10</button>
-                <button class="bet purple" data-value="50" onClick={getIncrements}>50</button>
-                <button class="bet yellow" data-value="100" onClick={getIncrements}>100</button>
+              <div className="bet-tiles-grid">
+                <button className="bet red" data-value="5" onClick={getIncrements}>05</button>
+                <button className="bet pink" data-value="10" onClick={getIncrements}>10</button>
+                <button className="bet purple" data-value="50" onClick={getIncrements}>50</button>
+                <button className="bet yellow" data-value="100" onClick={getIncrements}>100</button>
               </div>
             </div>
-            <div class="input-play">
-              <button id="start-game-btn" onClick={onSave}>Save & Play</button>
+            <div className="input-play">
+              <button id="start-game-btn" onClick={() => onSave(tempBalance, tempIncrement)}>Save & Play</button>
             </div>
           </div>
         </div>
@@ -105,60 +99,117 @@ const RulesComponent = ({ isOpen, onClose }) => {
   );
 }
 
-const ReelComponent = ({ colors, isSpinning }) => {
-  const [color1, setColor1] = useState(0);
-  const [color2, setColor2] = useState(0);
-  const [color3, setColor3] = useState(0);
+const ReelComponent = ({ colors, isSpinning, finalValues }) => {
+  const [tempColor1, setTempColor1] = useState(0);
+  const [tempColor2, setTempColor2] = useState(0);
+  const [tempColor3, setTempColor3] = useState(0);
 
   useEffect(() => {
     if (!colors || colors.length === 0) return;
-
     if (!isSpinning) return;
-    
-    const interval = setInterval(() => {
-      let color_reel1 = Math.floor(Math.random() * colors.length);
-      let color_reel2 = Math.floor(Math.random() * colors.length);
-      let color_reel3 = Math.floor(Math.random() * colors.length);
 
-      setColor1(color_reel1);
-      setColor2(color_reel2);
-      setColor3(color_reel3);
+    // Shuffle colors while spinning
+    const interval = setInterval(() => {
+      setTempColor1(Math.floor(Math.random() * colors.length));
+      setTempColor2(Math.floor(Math.random() * colors.length));
+      setTempColor3(Math.floor(Math.random() * colors.length));
     }, 300);
+
     return () => clearInterval(interval);
   }, [colors, isSpinning]);
 
-      return (
-        <>
-          <div className={`reel-1 ${colors[color1]}`} ></div>
-          <div className={`reel-2 ${colors[color2]}`}></div>
-          <div className={`reel-3 ${colors[color3]}`}></div>
-        </>
-      );
+  // Determine what to display: shuffling values if spinning, final values if stopped
+  const display1 = isSpinning ? tempColor1 : finalValues[0];
+  const display2 = isSpinning ? tempColor2 : finalValues[1];
+  const display3 = isSpinning ? tempColor3 : finalValues[2];
+
+  return (
+    <>
+      <div className={`reel-1 ${colors[display1]}`} ></div>
+      <div className={`reel-2 ${colors[display2]}`}></div>
+      <div className={`reel-3 ${colors[display3]}`}></div>
+    </>
+  );
 }
 
+//Main Components
 function App() {
-  const colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink'];
+  console.log("App Component is Running.");
 
+  let [betTiles, setBetTiles] = useState({});
+  const [balance, setBalance] = useState(0);
+  const [betIncrement, setBetIncrement] = useState(0);
+  const [reelValues, setReelValues] = useState([0, 0, 0]); // Stores index of red, yellow, green, etc.
   const [showDescription, setShowDescription] = useState(true);
   const [showRules, setShowRules] = useState(false);
-  const [isRolling, setIsRolling] = useState(true);
+  const [isRolling, setIsRolling] = useState(false);
 
-  const handleSave = () => {
-    if (validateSettings()) {
+  const colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink'];
+
+  const showAppearedTiles = {}
+
+  const validateSettings = (tempBalance, tempIncrement) => {
+    // Returns true only if both are positive numbers
+    return Number(tempBalance) > 0 && Number(tempIncrement) > 0;
+  }
+
+  const handleSave = (tempBalance, tempIncrement) => {
+  console.log("Saving Balance and Increment....");
+    if (validateSettings(tempBalance, tempIncrement)) {
+      setBalance(tempBalance);
+      setBetIncrement(tempIncrement);
       setShowDescription(false); // Hide the overlay
       // TODO: Set the React state for starting balance here so it shows in the footer!
+      setIsRolling(true);
     } else {
       alert("Please enter a starting balance and select a bet increment!");
+      console.log("Failed saving Balance and Increment....");
     }
+    console.log("Successfull saving Balance and Increment...");
   };
+
+  const handleRoll = () => {
+    setIsRolling(true);
+
+    // 1. Determine the final outcome indices (0 to 5) before rolling stops
+    const final1 = Math.floor(Math.random() * colors.length);
+    const final2 = Math.floor(Math.random() * colors.length);
+    const final3 = Math.floor(Math.random() * colors.length);
+
+    console.log(final1);
+    console.log(final2);
+    console.log(final3);
+
+    setTimeout(() => {
+      setIsRolling(false);
+
+      // 2. Save the final results to App state
+      setReelValues([final1, final2, final3]);
+
+      // 3. Now you have access to the final colors to update showAppearedTiles or calculate payouts!
+      showAppearedTiles.color1 = colors[final1];
+      showAppearedTiles.color2 = colors[final2];
+      showAppearedTiles.color3 = colors[final3];
+
+      console.log("Appeared colors:", showAppearedTiles);
+    }, 1500);
+  };
+
+  const handleBetTiles = (event) => {
+    const color = event.target.dataset.color;
+    setBetTiles((betTiles) => ({
+      ...betTiles,
+      [color]: (betTiles[color] || 0) + Number(betIncrement)
+    }))
+  }
 
   return (
     <>
       <DescriptionComponent isOpen={showDescription} onSave={handleSave} />
       <div className="game-container">
         <div className="header">
-          <h1 class="logo">COLORGAME</h1>
-          <button class="settings-btn">
+          <h1 className="logo">COLORGAME</h1>
+          <button className="settings-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
@@ -174,35 +225,36 @@ function App() {
         </div>
 
         <div className="reels-container">
-          <ReelComponent colors={colors} isSpinning={isRolling}/>
+          <ReelComponent colors={colors} isSpinning={isRolling} finalValues={reelValues} />
+
         </div>
         <div className="bet-section">
-          <div class="bet-header">
+          <div className="bet-header">
             <span>Place Bet</span>
             <hr />
           </div>
 
-          <div class="bet-grid">
-            <button class="bet-tile red" data-betRed="0" data-color="red"></button>
-            <button class="bet-tile green" data-betGreen="0" data-color="green"></button>
-            <button class="bet-tile purple" data-betPurple="0" data-color="purple"></button>
-            <button class="bet-tile yellow" data-betYellow="0" data-color="yellow"></button>
-            <button class="bet-tile blue" data-betBlue="0" data-color="blue"></button>
-            <button class="bet-tile pink" data-betPink="0" data-color="pink"></button>
+          <div className="bet-grid">
+            <button className="bet-tile red" data-color="red" onClick={handleBetTiles}>{betTiles.red > 0 && `${betTiles.red}`}</button>
+            <button className="bet-tile green" data-color="green" onClick={handleBetTiles}>{betTiles.green > 0 && `${betTiles.green}`}</button>
+            <button className="bet-tile purple" data-color="purple" onClick={handleBetTiles}>{betTiles.purple > 0 && `${betTiles.purple}`}</button>
+            <button className="bet-tile yellow" data-color="yellow" onClick={handleBetTiles}>{betTiles.yellow > 0 && `${betTiles.yellow}`}</button>
+            <button className="bet-tile blue" data-color="blue" onClick={handleBetTiles}>{betTiles.blue > 0 && `${betTiles.blue}`}</button>
+            <button className="bet-tile pink" data-color="pink" onClick={handleBetTiles}>{betTiles.pink > 0 && `${betTiles.pink}`}</button>
           </div>
         </div>
 
         <div className="footer">
-          <div class="info-group">
-            <span class="label">Balance</span>
-            <span class="balance-value">Php {(userSettings.startingBalance).toFixed(2)}</span>
+          <div className="info-group">
+            <span className="label">Balance</span>
+            <span className="balance-value">Php {(balance).toFixed(2)}</span>
           </div>
-          <div class="info-group play-button">
-            <button>Roll It!</button>
+          <div className="info-group play-button">
+            <button onClick={handleRoll}>Roll It!</button>
           </div>
-          <div class="info-group align-right">
-            <span class="label">Total Bet</span>
-            <span class="bet-value">00</span>
+          <div className="info-group align-right">
+            <span className="label">Total Bet</span>
+            <span className="bet-value">00</span>
           </div>
         </div>
       </div>
