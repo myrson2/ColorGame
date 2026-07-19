@@ -132,6 +132,66 @@ const ReelComponent = ({ colors, isSpinning, finalValues }) => {
   );
 }
 
+const SettingsComponent = ({ isOpen, onClose, onSave, balance, betIncrement }) => {
+
+  const [tempBalance, setTempBalance] = useState(0);
+  const [tempIncrement, setTempIncrement] = useState(0);
+
+  if(!isOpen) return null;
+
+   function getBalance(event) {
+    console.log('Setting Balance...');
+    setTempBalance(Number(event.target.value));
+  }
+  function getIncrements(event) {
+    console.log('Setting Increment...');
+    setTempIncrement(Number(event.target.dataset.value));
+  }
+
+  return (
+    <>
+      <div className="settings-overlay" id="settings-modal">
+        <div className="settings-card">
+          <div className="settings-header">
+            <h2>Game Settings</h2>
+          </div>
+          <div className="settings-body">
+            <div className="settings-group">
+              <label>Current Balance</label>
+              <div className="current-info-box">
+                <span>Active Balance:</span>
+                <span className="current-info-val" id="current-balance-display">Php {(Number(balance) || 0).toFixed(2)}</span>
+              </div>
+              <label htmlFor="edit-balance" style={{ marginTop: '6px' }}>New Balance Amount</label>
+              <input type="number" className="settings-input" id="edit-balance" placeholder="Enter new balance..." onChange={getBalance}/>
+            </div>
+
+            <div className="settings-group">
+              <label>Current Bet Increment</label>
+              <div className="current-info-box">
+                <span>Active Increment:</span>
+                <span className="current-info-val" id="current-increment-display">Php {(Number(betIncrement) || 0).toFixed(2)}</span>
+              </div>
+              <label style={{ marginTop: '6px' }}>Select New Bet Increment</label>
+              <div className="bet-increments-grid">
+                <button type="button" className="bet-chip-btn red active" data-value="5" onClick={getIncrements}>05</button>
+                <button type="button" className="bet-chip-btn pink" data-value="10" onClick={getIncrements}>10</button>
+                <button type="button" className="bet-chip-btn purple" data-value="50" onClick={getIncrements}>50</button>
+                <button type="button" className="bet-chip-btn yellow" data-value="100" onClick={getIncrements}>100</button>
+              </div>
+            </div>
+
+            <div className="settings-actions">
+              <button type="button" className="settings-btn-cancel" id="cancel-settings-btn" onClick={onClose}>Cancel</button>
+              <button type="button" className="settings-btn-save" id="save-settings-btn" onClick={() => onSave(tempBalance, tempIncrement)}>Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 //Main Components
 function App() {
   console.log("App Component is Running.");
@@ -143,6 +203,7 @@ function App() {
   const [showDescription, setShowDescription] = useState(true);
   const [showRules, setShowRules] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink'];
 
@@ -159,6 +220,7 @@ function App() {
       setBalance(tempBalance);
       setBetIncrement(tempIncrement);
       setShowDescription(false); // Hide the overlay
+      setShowSettings(false);
       // TODO: Set the React state for starting balance here so it shows in the footer!
       setIsRolling(true);
     } else {
@@ -166,6 +228,8 @@ function App() {
       console.log("Failed saving Balance and Increment....");
     }
     console.log("Successfull saving Balance and Increment...");
+    console.log(tempBalance);
+    console.log(tempIncrement);
   };
 
   const handleRoll = () => {
@@ -203,13 +267,17 @@ function App() {
     }))
   }
 
+  const handleSettingsBtn = () => {
+    setShowSettings(true);
+  } 
+
   return (
     <>
       <DescriptionComponent isOpen={showDescription} onSave={handleSave} />
       <div className="game-container">
         <div className="header">
           <h1 className="logo">COLORGAME</h1>
-          <button className="settings-btn">
+          <button className="settings-btn" onClick={handleSettingsBtn}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
@@ -223,6 +291,7 @@ function App() {
             </svg>
           </button>
         </div>
+        <SettingsComponent isOpen={showSettings} onClose={() => setShowSettings(false)} onSave={handleSave} balance={balance} betIncrement={betIncrement}/>
 
         <div className="reels-container">
           <ReelComponent colors={colors} isSpinning={isRolling} finalValues={reelValues} />
