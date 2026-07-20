@@ -5,13 +5,14 @@ import './css/Rules.css'
 
 //Components
 const DescriptionComponent = ({ isOpen, onSave }) => {
-  console.log('Description Component is running now.....');
+
   // 1. Add temporary local states to hold inputs
   const [tempBalance, setTempBalance] = useState(0);
   const [tempIncrement, setTempIncrement] = useState(0);
 
   if (!isOpen) return null;
 
+  console.log('Description Component is running now.....');
   // 2. Update functions to set state instead of modifying objects
   function getBalance(event) {
     console.log('Setting Balance...');
@@ -51,7 +52,7 @@ const DescriptionComponent = ({ isOpen, onSave }) => {
               </div>
             </div>
             <div className="input-play">
-              <button id="start-game-btn" onClick={() => onSave(tempBalance, tempIncrement)}>Save & Play</button>
+              <button id="start-game-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance === 0 || tempIncrement === 0} >Save & Play</button>
             </div>
           </div>
         </div>
@@ -137,9 +138,12 @@ const SettingsComponent = ({ isOpen, onClose, onSave, balance, betIncrement }) =
   const [tempBalance, setTempBalance] = useState(0);
   const [tempIncrement, setTempIncrement] = useState(0);
 
-  if(!isOpen) return null;
+  console.log(tempBalance);
+  console.log(tempIncrement);
 
-   function getBalance(event) {
+  if (!isOpen) return null;
+
+  function getBalance(event) {
     console.log('Setting Balance...');
     setTempBalance(Number(event.target.value));
   }
@@ -163,7 +167,7 @@ const SettingsComponent = ({ isOpen, onClose, onSave, balance, betIncrement }) =
                 <span className="current-info-val" id="current-balance-display">Php {(Number(balance) || 0).toFixed(2)}</span>
               </div>
               <label htmlFor="edit-balance" style={{ marginTop: '6px' }}>New Balance Amount</label>
-              <input type="number" className="settings-input" id="edit-balance" placeholder="Enter new balance..." onChange={getBalance}/>
+              <input type="number" className="settings-input" id="edit-balance" placeholder="Enter new balance..." onChange={getBalance} />
             </div>
 
             <div className="settings-group">
@@ -174,16 +178,16 @@ const SettingsComponent = ({ isOpen, onClose, onSave, balance, betIncrement }) =
               </div>
               <label style={{ marginTop: '6px' }}>Select New Bet Increment</label>
               <div className="bet-increments-grid">
-                <button type="button" className="bet-chip-btn red active" data-value="5" onClick={getIncrements}>05</button>
-                <button type="button" className="bet-chip-btn pink" data-value="10" onClick={getIncrements}>10</button>
-                <button type="button" className="bet-chip-btn purple" data-value="50" onClick={getIncrements}>50</button>
-                <button type="button" className="bet-chip-btn yellow" data-value="100" onClick={getIncrements}>100</button>
+                <button type="button" className={`bet-chip-btn red ${tempIncrement === 5 ? 'active' : ''}`} data-value="5" onClick={getIncrements}>05</button>
+                <button type="button" className={`bet-chip-btn pink ${tempIncrement === 10 ? 'active' : ''}`} data-value="10" onClick={getIncrements}>10</button>
+                <button type="button" className={`bet-chip-btn purple ${tempIncrement === 50 ? 'active' : ''}`} data-value="50" onClick={getIncrements}>50</button>
+                <button type="button" className={`bet-chip-btn yellow ${tempIncrement === 100 ? 'active' : ''}`} data-value="100" onClick={getIncrements}>100</button>
               </div>
             </div>
 
             <div className="settings-actions">
               <button type="button" className="settings-btn-cancel" id="cancel-settings-btn" onClick={onClose}>Cancel</button>
-              <button type="button" className="settings-btn-save" id="save-settings-btn" onClick={() => onSave(tempBalance, tempIncrement)}>Save Changes</button>
+              <button type="button" className="settings-btn-save" id="save-settings-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance === 0 || tempIncrement === 0}>Save Changes</button>
             </div>
           </div>
         </div>
@@ -215,7 +219,7 @@ function App() {
   }
 
   const handleSave = (tempBalance, tempIncrement) => {
-  console.log("Saving Balance and Increment....");
+    console.log("Saving Balance and Increment....");
     if (validateSettings(tempBalance, tempIncrement)) {
       setBalance(tempBalance);
       setBetIncrement(tempIncrement);
@@ -269,11 +273,11 @@ function App() {
 
   const handleSettingsBtn = () => {
     setShowSettings(true);
-  } 
+  }
 
   return (
     <>
-      <DescriptionComponent isOpen={showDescription} onSave={handleSave} />
+      <DescriptionComponent key={showDescription} isOpen={showDescription} onSave={handleSave} />
       <div className="game-container">
         <div className="header">
           <h1 className="logo">COLORGAME</h1>
@@ -291,7 +295,7 @@ function App() {
             </svg>
           </button>
         </div>
-        <SettingsComponent isOpen={showSettings} onClose={() => setShowSettings(false)} onSave={handleSave} balance={balance} betIncrement={betIncrement}/>
+        <SettingsComponent key={showSettings} isOpen={showSettings} onClose={() => setShowSettings(false)} onSave={handleSave} balance={balance} betIncrement={betIncrement} />
 
         <div className="reels-container">
           <ReelComponent colors={colors} isSpinning={isRolling} finalValues={reelValues} />
@@ -330,7 +334,7 @@ function App() {
       <div className="rules">
         <button onClick={() => setShowRules(true)}> view rules </button>
       </div>
-      <RulesComponent isOpen={showRules} onClose={() => setShowRules(false)} />
+      <RulesComponent key={showRules} isOpen={showRules} onClose={() => setShowRules(false)} />
     </>
   );
 }
