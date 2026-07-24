@@ -48,7 +48,7 @@ const DescriptionComponent = ({ isOpen, onSave }) => {
               </div>
             </div>
             <div className="input-play">
-              <button id="start-game-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance <= 1000 || tempIncrement === 0} >Save & Play</button>
+              <button id="start-game-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance < 1000 || tempIncrement === 0} >Save & Play</button>
             </div>
           </div>
         </div>

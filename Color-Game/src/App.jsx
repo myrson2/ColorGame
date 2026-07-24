@@ -5,6 +5,11 @@ import RulesComponent from './components/RuleComponent';
 import SettingsComponent from './components/SettingsComponent';
 import './css/App.css';
 import './css/Rules.css'
+import ResultComponent from './components/ResultComponent';
+
+// Define this at the top of src/App.jsx, before function App()
+const getRandomIndex = (length) => Math.floor(Math.random() * length);
+
 
 function App() {
   console.log("App Component is Running.");
@@ -17,10 +22,33 @@ function App() {
   const [showRules, setShowRules] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   const colors = ['red', 'yellow', 'green', 'blue', 'purple', 'pink'];
 
-  const showAppearedTiles = {}
+  const [appearedTiles, setAppearedTiles] = useState({});
+  const [result, setResult] = useState({});
+
+  const getResult = (nextAppeared) => {
+
+    const nextResult = {};
+    const appearedValues = Object.values(nextAppeared);
+
+    console.log('Appeared Values: ', appearedValues);
+
+    for (const [bettedTiles, bettedValue] of Object.entries(betTiles)) {
+
+      const matchCount = appearedValues.filter(
+        (color) => color.trim().toLowerCase() === bettedTiles.trim().toLowerCase()
+      ).length;
+
+      console.log('Match Count: ', matchCount);
+
+      nextResult[bettedTiles] = matchCount === 0 ? bettedValue * -1 : bettedValue * matchCount;
+    }
+    setResult(nextResult);
+    return;
+  }
 
   const validateSettings = (tempBalance, tempIncrement) => {
     // Returns true only if both are positive numbers
@@ -45,9 +73,9 @@ function App() {
     setIsRolling(true);
 
     // 1. Determine the final outcome indices (0 to 5) before rolling stops
-    const final1 = Math.floor(Math.random() * colors.length);
-    const final2 = Math.floor(Math.random() * colors.length);
-    const final3 = Math.floor(Math.random() * colors.length);
+    const final1 = getRandomIndex(colors.length);
+    const final2 = getRandomIndex(colors.length);
+    const final3 = getRandomIndex(colors.length);
 
     setTimeout(() => {
       setIsRolling(false);
@@ -55,16 +83,36 @@ function App() {
       // 2. Save the final results to App state
       setReelValues([final1, final2, final3]);
 
-      showAppearedTiles.color1 = colors[final1];
-      showAppearedTiles.color2 = colors[final2];
-      showAppearedTiles.color3 = colors[final3];
+      const nextAppeared = {
+        color1: colors[final1],
+        color2: colors[final2],
+        color3: colors[final3],
+      };
+      setAppearedTiles(nextAppeared);
 
-      console.log("Appeared colors:", showAppearedTiles);
+      // Calculate results with the newly generated values
+      getResult(nextAppeared);
+
+      handleSetShowResult();
     }, 1500);
   };
 
+  const handleSetShowResult = () => {
+    setTimeout(() => {
+      setShowResult(true);
+    }, 1200);
+  }
+
   const handleBetTiles = (event) => {
     const color = event.currentTarget.dataset.color;
+    const inc = Number(betIncrement);
+
+    if (totalBet + inc > balance) {
+      alert("Insufficient balance to place this bet!");
+      return;
+    }
+
+
     if (!color) return;
     setBetTiles((prev) => ({
       ...prev,
@@ -76,9 +124,15 @@ function App() {
     setShowSettings(true);
   }
 
+  console.log('Appeared Tiles', appearedTiles);
+  console.log('BeT Tiles', betTiles);
+  console.log('Result: ', result);
+
   // Calculate total bet placed across all tiles
   const totalBet = Object.values(betTiles).reduce((sum, amount) => sum + amount, 0);
+  const overallResult = Object.values(result).reduce((sum, amount) => sum + amount, 0);
 
+  console.log('Overall Result: ', overallResult);
   return (
     <>
       <DescriptionComponent isOpen={showDescription} onSave={handleSave} />
@@ -109,6 +163,7 @@ function App() {
           <div className="bet-header">
             <span>Place Bet</span>
             <hr />
+            <button className="clear-bets-btn" onClick={() => setBetTiles({})}>Clear Bets</button>
           </div>
 
           <div className="bet-grid">
@@ -124,7 +179,7 @@ function App() {
         <div className="footer">
           <div className="info-group">
             <span className="label">Balance</span>
-            <span className="balance-value">Php {(balance).toFixed(2)}</span>
+            <span className="balance-value">₱{(balance).toFixed(2)}</span>
           </div>
           <div className="info-group play-button">
             <button onClick={handleRoll} disabled={totalBet === 0 || isRolling}>
@@ -139,7 +194,7 @@ function App() {
           </div>
           <div className="info-group align-right">
             <span className="label">Total Bet</span>
-            <span className="bet-value">Php {totalBet.toFixed(2)}</span>
+            <span className="bet-value">₱{totalBet.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -147,6 +202,21 @@ function App() {
         <button onClick={() => setShowRules(true)}> view rules </button>
       </div>
       <RulesComponent isOpen={showRules} onClose={() => setShowRules(false)} />
+      <ResultComponent 
+        isOpen={showResult} 
+        result={result} 
+        overallResult={overallResult} 
+        balance={balance} 
+        betTiles={betTiles} 
+        onClose={
+          () => {
+            setBalance((current_balance) => current_balance + (overallResult));
+            setBetTiles({})
+            setAppearedTiles({})
+            setResult({})
+            setShowResult(false)
+          }
+          }/>
     </>
   );
 }

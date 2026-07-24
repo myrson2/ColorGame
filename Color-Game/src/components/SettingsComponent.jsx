@@ -54,7 +54,7 @@ const SettingsComponent = ({ isOpen, onClose, onSave, balance, betIncrement }) =
 
             <div className="settings-actions">
               <button type="button" className="settings-btn-cancel" id="cancel-settings-btn" onClick={onClose}>Cancel</button>
-              <button type="button" className="settings-btn-save" id="save-settings-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance === 1000 || tempIncrement === 0}>Save Changes</button>
+              <button type="button" className="settings-btn-save" id="save-settings-btn" onClick={() => onSave(tempBalance, tempIncrement)} disabled={tempBalance <= 0  || tempIncrement === 0}>Save Changes</button>
             </div>
           </div>
         </div>

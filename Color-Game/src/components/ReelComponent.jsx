@@ -14,7 +14,7 @@ const ReelComponent = ({ colors, isSpinning, finalValues }) => {
       setTempColor1(Math.floor(Math.random() * colors.length));
       setTempColor2(Math.floor(Math.random() * colors.length));
       setTempColor3(Math.floor(Math.random() * colors.length));
-    }, 300);
+    }, 90);
 
     return () => clearInterval(interval);
   }, [colors, isSpinning]);
