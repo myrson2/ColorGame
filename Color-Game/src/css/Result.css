@@ -1,0 +1,195 @@
+.result-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.result-section {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--card-bg, #222222);
+    border: 1px solid var(--border-color, #444444);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: fadeInWelcome 0.4s ease-out forwards;
+}
+
+.result-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    color: #ffffff;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background-color: #1a1a1a;
+    border: 1px solid #2d2d2d;
+    border-radius: 8px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+/* Bet Table styling */
+.bet-table-container {
+    background-color: #111111;
+    border: 1px solid #222222;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.bet-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bet-table th {
+    color: #888888;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.bet-table td {
+    padding: 14px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #222222;
+}
+
+.bet-table tr:last-child td {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.bet-table th.center,
+.bet-table td.center {
+    text-align: center;
+}
+
+.bet-table th.right,
+.bet-table td.right {
+    text-align: right;
+}
+
+.color-green {
+    color: #4ade80;
+}
+
+.color-red {
+    color: #f87171;
+}
+
+.color-white {
+    color: #ffffff;
+}
+
+/* Total Panel styling */
+.total-display {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.total-amount {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.formula-text {
+    font-size: 0.75rem;
+    color: #666666;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.stake-box {
+    background-color: #111111;
+    border-radius: 6px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.stake-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #aaaaaa;
+}
+
+.stake-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+/* Right Column Action Buttons */
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+.action-btn:hover {
+    filter: brightness(1.1);
+}
+
+.action-btn:active {
+    transform: scale(0.98);
+}
+
+.btn-bet-again {
+    background-color: #10b981;
+    color: #000000;
+}
+
+.btn-cashout {
+    background-color: #3b82f6;
+    color: #000000;
+}
